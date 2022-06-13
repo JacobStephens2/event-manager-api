@@ -1,10 +1,12 @@
 {
   "name": "events-manager-api",
   "version": "1.0.0",
-  "description": "��#\u0000 \u0000e\u0000v\u0000e\u0000n\u0000t\u0000s\u0000-\u0000m\u0000a\u0000n\u0000a\u0000g\u0000e\u0000r\u0000-\u0000a\u0000p\u0000i\u0000\r\u0000 \u0000",
+  "description": "An API for the events manager UI",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --ignore feedback.json server.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@babel/core": "^7.18.2",
     "@babel/node": "^7.17.10",
-    "@babel/preset-env": "^7.18.2"
+    "@babel/preset-env": "^7.18.2",
+    "nodemon": "^2.0.16"
   }
 }
