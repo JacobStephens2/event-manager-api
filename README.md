@@ -1,2 +1,2 @@
-# event-manager-api
+# Event Manager API
 The backend for the Event Manager app
