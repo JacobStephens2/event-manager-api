@@ -19,4 +19,4 @@ https://api.eventmanager.stewardgoods.com/users
 
 ### GET /hello/{name}
 
-https://api.eventmanager.stewardgoods.com/hello/John
+https://api.eventmanager.stewardgoods.com/hello/Jacob
