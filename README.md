@@ -13,10 +13,10 @@ This project has been developed to run on a server running PHP 8 (https://www.ph
 
 https://api.eventmanager.stewardgoods.com/
 
-### GET /users
-
-https://api.eventmanager.stewardgoods.com/users
-
 ### GET /hello/{name}
 
 https://api.eventmanager.stewardgoods.com/hello/Jacob
+
+### POST /mimic-json
+
+https://api.eventmanager.stewardgoods.com/mimic-json
