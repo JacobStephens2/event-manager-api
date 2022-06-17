@@ -62,6 +62,11 @@ $app->post('/login',
     }
 );
 
+if ($_ENV['ERROR_DISPLAY'] == 'false') {
+    $error_display = false;
+} else {
+    $error_display = true;
+}
 $app->addErrorMiddleware($_ENV['ERROR_DISPLAY'], true, true);
 
 $app->run();
