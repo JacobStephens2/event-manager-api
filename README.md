@@ -17,6 +17,13 @@ https://api.eventmanager.stewardgoods.com/
 
 https://api.eventmanager.stewardgoods.com/hello/Jacob
 
-### POST /mimic-json
+### POST /login
 
-https://api.eventmanager.stewardgoods.com/mimic-json
+https://api.eventmanager.stewardgoods.com/login
+
+Submit a JSON body in the request like the following:
+
+`{
+    "email": "jacob@example.com",
+    "password": "goodPassword123"
+}`

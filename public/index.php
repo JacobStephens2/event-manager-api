@@ -2,6 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+use Firebase\JWT\JWT;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../initialize.php';
@@ -21,7 +22,7 @@ $app->get('/',
             'API Origin'=>$_ENV['API_ORIGIN'],
             'GET /'=>$_ENV['API_ORIGIN'] . '/',
             'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
-            'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json'
+            'POST /login'=>$_ENV['API_ORIGIN'] . '/login'
         );
         $payload = json_encode($message);
         $response->getBody()->write($payload);
@@ -41,14 +42,22 @@ $app->get('/hello/{name}',
     }
 );
 
-$app->post('/mimic-json', 
+$app->post('/login', 
     function( Request $request, Response $response, $args ) {
+        // get request body
+        $requestBody = $request->getParsedBody();  
+        // verify user
+        $user = new User();
+        $verified_user = $user->verify_login_credentials( $requestBody['email'], $requestBody['password'] );
+        // create response
         $response = $response->withHeader('Content-type', 'application/json');
         $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        $requestBody = $request->getParsedBody();  
-        $payload = json_encode($requestBody);
-        $response->getBody()->write($payload);
+        if( $verified_user ) {
+            $response->getBody()->write('Log in succeeded');
+        } else {
+            $response->getBody()->write('Log in failed');
+        }
         return $response;
     }
 );
