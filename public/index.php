@@ -19,11 +19,15 @@ $app->get('/',
         $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $message = array(
             'message'=>'Hello from the Event Manager API',
-            'Request Origin'=>$_ENV['REQUEST_ORIGIN'],
+            'UI Origin'=>$_ENV['REQUEST_ORIGIN'],
+            'UI Repository'=>'https://github.com/JacobStephens2/event-manager-ui',
             'API Origin'=>$_ENV['API_ORIGIN'],
-            'GET /'=>$_ENV['API_ORIGIN'] . '/',
-            'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
-            'POST /login'=>$_ENV['API_ORIGIN'] . '/login'
+            'API Repository'=>'https://github.com/JacobStephens2/event-manager-api',
+            'endpoints'=>array(
+                'GET /'=>$_ENV['API_ORIGIN'] . '/',
+                'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
+                'POST /login'=>$_ENV['API_ORIGIN'] . '/login'
+            )
         );
         $payload = json_encode($message);
         $response->getBody()->write($payload);
