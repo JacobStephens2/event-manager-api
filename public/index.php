@@ -67,6 +67,6 @@ if ($_ENV['ERROR_DISPLAY'] == 'false') {
 } else {
     $error_display = true;
 }
-$app->addErrorMiddleware($_ENV['ERROR_DISPLAY'], true, true);
+$app->addErrorMiddleware($error_display, true, true);
 
 $app->run();
