@@ -19,6 +19,7 @@ $app->get('/',
         $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $message = array(
             'message'=>'Hello from the Event Manager API',
+            'Request Origin'=>$_ENV['REQUEST_ORIGIN'],
             'API Origin'=>$_ENV['API_ORIGIN'],
             'GET /'=>$_ENV['API_ORIGIN'] . '/',
             'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
