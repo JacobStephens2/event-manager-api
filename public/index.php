@@ -15,7 +15,7 @@ $app->addBodyParsingMiddleware();
 $app->get('/', 
     function( Request $request, Response $response, $args ) {
         $response = $response->withHeader('Content-type', 'application/json');
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['ORIGIN']);
+        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $message = array(
             'message'=>'Hello from the Event Manager API',
             'API Origin'=>$_ENV['API_ORIGIN'],
@@ -32,7 +32,7 @@ $app->get('/',
 $app->get('/hello/{name}', 
     function (Request $request, Response $response, $args) {
         $response = $response->withHeader('Content-type', 'application/json');
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['ORIGIN']);
+        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $name = $args['name'];
         $message = array('message'=>"Hello, $name");
         $payload = json_encode($message);
@@ -44,7 +44,7 @@ $app->get('/hello/{name}',
 $app->post('/mimic-json', 
     function( Request $request, Response $response, $args ) {
         $response = $response->withHeader('Content-type', 'application/json');
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['ORIGIN']);
+        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $requestBody = $request->getParsedBody();  
         $payload = json_encode($requestBody);
