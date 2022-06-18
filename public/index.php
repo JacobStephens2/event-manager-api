@@ -49,8 +49,9 @@ $app->post('/',
 $app->post('/mimic-json', 
     function( Request $request, Response $response, $args ) {
         $requestBody = $request->getParsedBody();  
-        $payload = json_encode($requestBody);
-        $response->getBody()->write($payload);
+        $responseBody = json_encode($requestBody);
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $response->getBody()->write($responseBody);
         return $response;
     }
 );
@@ -59,8 +60,8 @@ $app->get('/hello/{name}',
     function (Request $request, Response $response, $args) {
         $name = $args['name'];
         $message = array('message'=>"Hello, $name");
-        $payload = json_encode($message);
-        $response->getBody()->write($payload);
+        $responseBody = json_encode($message);
+        $response->getBody()->write($responseBody);
         return $response;
     }
 );
@@ -75,9 +76,13 @@ $app->post('/login',
         // create response
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         if( $verified_user ) {
-            $response->getBody()->write('Log in succeeded');
+            $message = array('message'=>"Log in succeeded");
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
         } else {
-            $response->getBody()->write('Log in failed');
+            $message = array('message'=>"Log in failed");
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
         }
         return $response;
     }
