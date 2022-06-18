@@ -70,19 +70,51 @@ $app->post('/login',
         $requestBody = $request->getParsedBody();  
         // verify user
         $user = new User();
-        $verified_user = $user->verify_login_credentials( $requestBody['email'], $requestBody['password'] );
+        $verified_user = $user->verify_login_credentials( 
+                                    $requestBody['email'], 
+                                    $requestBody['password'] 
+                                );
         // create response
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         if( $verified_user ) {
-            $message = array('message'=>"Log in succeeded");
+            $message = new stdClass();
+            $message->message = 'Log in succeeded';
+            // Create JWT access token cookie for response 
+            $issuedAt   = new DateTimeImmutable();
+            $jwt_access_token_data = [
+                // Issued at: time when the token was generated
+                'iat'  => $issuedAt->getTimestamp(),  
+                'iss'  => $_SERVER['SERVER_NAME'], // Issuer
+                'nbf'  => $issuedAt->getTimestamp(), // Not before 
+                'exp'  => $issuedAt->modify('+60 minutes')->getTimestamp(), // Expire                      
+                'user_id' => $verified_user->id,
+            ];
+            $access_token = JWT::encode(
+                $jwt_access_token_data,
+                $_ENV['JWT_SECRET'],
+                'HS256'
+            );
+            ( $_ENV['COOKIE_SECURE'] === 'true' ) 
+                ? $cookie_secure = true 
+                : $cookie_secure = false;
+            setcookie(
+                "access_token",         // name
+                $access_token,          // value
+                time() + (86400 * 7),   // expire, 86400 = 1 day
+                "",                     // path
+                $_ENV['API_DOMAIN'],    // domain
+                $cookie_secure,         // if true, send cookie only to https requests
+                true                    // httponly
+            ); // End of JWT Access Token Cookie creation
+            $message->logged_in = 'true';
             $responseBody = json_encode($message);
             $response->getBody()->write($responseBody);
+            return $response;
         } else {
             $message = array('message'=>"Log in failed");
             $responseBody = json_encode($message);
             $response->getBody()->write($responseBody);
         }
-        return $response;
     }
 );
 
