@@ -3,7 +3,7 @@
 class User extends DatabaseObject {
   
   static protected $table_name = 'users';
-  static protected $db_columns = ['id', 'email', 'user_group', 'hashed_password'];
+  static protected $db_columns = ['id', 'email', 'password', 'user_group'];
 
   public $id;
   public $email;
