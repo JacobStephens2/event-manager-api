@@ -24,7 +24,9 @@ $app->get('/',
             'endpoints'=>array(
                 'GET /'=>$_ENV['API_ORIGIN'] . '/',
                 'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
-                'POST /login'=>$_ENV['API_ORIGIN'] . '/login'
+                'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
+                'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
+                'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up'
             )
         );
         $payload = json_encode($message);

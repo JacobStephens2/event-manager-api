@@ -27,3 +27,24 @@ Submit a JSON body in the request like the following:
     "email": "jacob@example.com",
     "password": "goodPassword123"
 }`
+
+### POST /sign-up
+
+https://api.eventmanager.stewardgoods.com/sign-up
+
+Submit a JSON body in the request like the following:
+
+`{
+    "email": "jacob@example.com",
+    "password": "goodPassword123"
+}`
+
+### POST /mimic-json
+
+https://api.eventmanager.stewardgoods.com/mimic-json
+
+Submit a JSON body in the request like the following:
+
+`{
+    "message": "Hello, world!"
+}`
