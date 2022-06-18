@@ -114,6 +114,7 @@ $app->post('/login',
             $message = array('message'=>"Log in failed");
             $responseBody = json_encode($message);
             $response->getBody()->write($responseBody);
+            return $response;
         }
     }
 );
