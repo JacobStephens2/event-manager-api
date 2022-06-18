@@ -35,10 +35,28 @@ $app->get('/',
     }
 );
 
+$app->post('/', 
+    function( Request $request, Response $response, $args ) {
+        $message = array(
+            'message'=>'Hello from the Event Manager API',
+        );
+        $payload = json_encode($message);
+        $response->getBody()->write($payload);
+        return $response;
+    }
+);
+
+$app->post('/mimic-json', 
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $payload = json_encode($requestBody);
+        $response->getBody()->write($payload);
+        return $response;
+    }
+);
+
 $app->get('/hello/{name}', 
     function (Request $request, Response $response, $args) {
-        $response = $response->withHeader('Content-type', 'application/json');
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $name = $args['name'];
         $message = array('message'=>"Hello, $name");
         $payload = json_encode($message);
@@ -55,8 +73,6 @@ $app->post('/login',
         $user = new User();
         $verified_user = $user->verify_login_credentials( $requestBody['email'], $requestBody['password'] );
         // create response
-        $response = $response->withHeader('Content-type', 'application/json');
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         if( $verified_user ) {
             $response->getBody()->write('Log in succeeded');
