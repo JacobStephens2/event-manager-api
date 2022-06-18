@@ -19,7 +19,7 @@ class User extends DatabaseObject {
       $sql .= ") VALUES (";
       $sql .= "'" . self::$database->escape_string($email) . "', ";
       $sql .= "'" . self::$database->escape_string($password) . "', ";
-      $sql .= "'1'";
+      $sql .= "'users'";
       $sql .= ")";
       $result = self::$database->query($sql);
       if($result) {

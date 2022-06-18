@@ -119,6 +119,23 @@ $app->post('/login',
     }
 );
 
+$app->post('/sign-up', 
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $user = new User($requestBody);
+        $result = $user->createUser( $requestBody['email'], $requestBody['password'] );
+        $responseBody = new stdClass();
+        if( $result ) {
+            $responseBody->message = 'Account creation succeeded';
+        } else {
+            $responseBody->message = 'Use a different email address';
+        }
+        $responseBodyJSON = json_encode($responseBody);
+        $response->getBody()->write($responseBodyJSON);
+        return $response;
+    }
+);
+
 if ($_ENV['ERROR_DISPLAY'] == 'false') {
     $error_display = false;
 } else {
