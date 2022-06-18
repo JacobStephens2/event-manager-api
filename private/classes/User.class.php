@@ -14,11 +14,12 @@ class User extends DatabaseObject {
     if ($email_is_registered) {
       return false;
     } else {
+      $hashed_password = password_hash($password, PASSWORD_BCRYPT);
       $sql = "INSERT INTO users (";
       $sql .= "email, password, user_group ";
       $sql .= ") VALUES (";
       $sql .= "'" . self::$database->escape_string($email) . "', ";
-      $sql .= "'" . self::$database->escape_string($password) . "', ";
+      $sql .= "'" . self::$database->escape_string($hashed_password) . "', ";
       $sql .= "'users'";
       $sql .= ")";
       $result = self::$database->query($sql);
@@ -32,10 +33,13 @@ class User extends DatabaseObject {
   public function verify_login_credentials($email, $password) {
     $sql = "SELECT * FROM users ";
     $sql .= "WHERE email = '" . self::$database->escape_string($email) . "' ";
-    $sql .= "AND password = '" . self::$database->escape_string($password) . "'";
     $obj_array = self::find_by_sql($sql);
     if(!empty($obj_array)) {
-      return array_shift($obj_array);
+      if(password_verify($password, $obj_array[0]->password)) {
+        return array_shift($obj_array);
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
