@@ -15,8 +15,6 @@ $app->addBodyParsingMiddleware();
 // Define app routes
 $app->get('/', 
     function( Request $request, Response $response, $args ) {
-        $response = $response->withHeader('Content-type', 'application/json');
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_ENV['REQUEST_ORIGIN']);
         $message = array(
             'message'=>'Hello from the Event Manager API',
             'UI Origin'=>$_ENV['REQUEST_ORIGIN'],
