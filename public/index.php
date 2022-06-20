@@ -4,7 +4,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Firebase\JWT\JWT;
 
-require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../initialize.php';
 
 $app = AppFactory::create();
@@ -137,6 +136,25 @@ $app->post('/sign-up',
         return $response;
     }
 );
+
+$app->get('/all_events',
+    function( Request $request, Response $response, $args ) {
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $events = Event::find_all();
+        $responseBody = json_encode($events);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
 
 if ($_ENV['ERROR_DISPLAY'] == 'false') {
     $error_display = false;
