@@ -137,7 +137,7 @@ $app->post('/sign-up',
     }
 );
 
-$app->get('/all_events',
+$app->get('/all-events',
     function( Request $request, Response $response, $args ) {
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $access_token = authenticate();
