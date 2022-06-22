@@ -58,5 +58,8 @@ Get a specific event by id.
 ### POST /event
 Create an event.
 
-### PUT /event/{id}
-Update an event by id.
+### PUT /event
+Update an event by id passed as id in the JSON body of the request.
+
+### DELETE /event
+Update an event by id passed as id in the JSON body of the request.

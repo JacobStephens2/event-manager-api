@@ -29,7 +29,8 @@ $app->get('/',
                 'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
                 'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
                 'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
-                'PUT /event/{id}'=>$_ENV['API_ORIGIN'] . '/event/1'
+                'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
+                'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event'
             )
         );
         $payload = json_encode($message);
@@ -199,9 +200,8 @@ $app->get('/event/{id}',
     }
 );
 
-$app->put('/event/{id}',
+$app->put('/event',
     function( Request $request, Response $response, $args ) {
-        $id = $args['id'];
         $requestBody = $request->getParsedBody();  
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $access_token = authenticate();
@@ -215,6 +215,27 @@ $app->put('/event/{id}',
         $event = new Event($requestBody);
         $event->merge_attributes($requestBody);
         $event->save();
+        $responseBody = json_encode($event);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->delete('/event',
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $event = new Event($requestBody);
+        $event->merge_attributes($requestBody);
+        $event->delete();
         $responseBody = json_encode($event);
         $response->getBody()->write($responseBody);
         return $response;
