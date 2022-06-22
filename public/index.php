@@ -137,6 +137,27 @@ $app->post('/sign-up',
     }
 );
 
+$app->post('/create-event',
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $event = new Event($requestBody);
+        $event->merge_attributes($requestBody);
+        $event->save();
+        $responseBody = json_encode($event);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
 $app->get('/all-events',
     function( Request $request, Response $response, $args ) {
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -155,8 +176,28 @@ $app->get('/all-events',
     }
 );
 
-$app->post('/create-event',
+$app->get('/event/{id}',
     function( Request $request, Response $response, $args ) {
+        $id = $args['id'];
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $event = Event::find_by_id($id);
+        $responseBody = json_encode($event);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->put('/update-event/{id}',
+    function( Request $request, Response $response, $args ) {
+        $id = $args['id'];
         $requestBody = $request->getParsedBody();  
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $access_token = authenticate();
