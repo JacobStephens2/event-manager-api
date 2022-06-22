@@ -25,7 +25,11 @@ $app->get('/',
                 'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
                 'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
                 'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
-                'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up'
+                'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up',
+                'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
+                'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
+                'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
+                'PUT /event/{id}'=>$_ENV['API_ORIGIN'] . '/event/1'
             )
         );
         $payload = json_encode($message);
@@ -137,7 +141,7 @@ $app->post('/sign-up',
     }
 );
 
-$app->post('/create-event',
+$app->post('/event',
     function( Request $request, Response $response, $args ) {
         $requestBody = $request->getParsedBody();  
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -158,7 +162,7 @@ $app->post('/create-event',
     }
 );
 
-$app->get('/all-events',
+$app->get('/events',
     function( Request $request, Response $response, $args ) {
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $access_token = authenticate();
@@ -195,7 +199,7 @@ $app->get('/event/{id}',
     }
 );
 
-$app->put('/update-event/{id}',
+$app->put('/event/{id}',
     function( Request $request, Response $response, $args ) {
         $id = $args['id'];
         $requestBody = $request->getParsedBody();  
@@ -216,8 +220,6 @@ $app->put('/update-event/{id}',
         return $response;
     }
 );
-
-
 
 if ($_ENV['ERROR_DISPLAY'] == 'false') {
     $error_display = false;

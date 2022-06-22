@@ -48,3 +48,15 @@ Submit a JSON body in the request like the following:
 `{
     "message": "Hello, world!"
 }`
+
+### GET /events
+Get all events.
+
+### GET /event/{id}
+Get a specific event by id.
+
+### POST /event
+Create an event.
+
+### PUT /event/{id}
+Update an event by id.
