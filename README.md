@@ -66,7 +66,7 @@ Create an event.
 Update an event by id passed as id in the JSON body of the request.
 
 `{
-    "id": "1"
+    "id": "1",
     "name": "North Point Commencement"
 }`
 
