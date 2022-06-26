@@ -14,7 +14,7 @@ class DatabaseObject {
   static public function find_by_sql($sql) {
     $result = self::$database->query($sql);
     if(!$result) {
-      exit("Database query failed.");
+      exit('Database query failed.');
     }
 
     // results into objects
@@ -33,9 +33,27 @@ class DatabaseObject {
     return static::find_by_sql($sql);
   }
 
+  static public function find_all_by_user_id($id) {
+    $sql = "SELECT * FROM " . static::$table_name . 
+          " WHERE user_id = " . self::$database->escape_string($id);
+    return static::find_by_sql($sql);
+  }
+
   static public function find_by_id($id) {
     $sql = "SELECT * FROM " . static::$table_name . " ";
     $sql .= "WHERE id='" . self::$database->escape_string($id) . "'";
+    $obj_array = static::find_by_sql($sql);
+    if(!empty($obj_array)) {
+      return array_shift($obj_array);
+    } else {
+      return false;
+    }
+  }
+
+  static public function find_by_id_and_user_id($id, $user_id) {
+    $sql = "SELECT * FROM " . static::$table_name . 
+          " WHERE id='" . self::$database->escape_string($id) . "'" .
+          " AND user_id = " . self::$database->escape_string($user_id);
     $obj_array = static::find_by_sql($sql);
     if(!empty($obj_array)) {
       return array_shift($obj_array);
@@ -99,10 +117,47 @@ class DatabaseObject {
     return $result;
   }
 
+  protected function update_by_user_id() {
+    $this->validate();
+    if(!empty($this->errors)) { return false; }
+
+    $attributes = $this->sanitized_attributes();
+    $attribute_pairs = [];
+    foreach($attributes as $key => $value) {
+      $attribute_pairs[] = "{$key}='{$value}'";
+    }
+    
+    $sql = "SELECT * FROM " . static::$table_name . " ";
+    $sql .= " WHERE id='" . self::$database->escape_string($this->id) . "' ";
+    $sql .= " AND user_id='" . self::$database->escape_string($this->user_id) . "' ";
+    $check_if_exists = self::$database->query($sql);
+    if ($check_if_exists->num_rows > 0) {      
+      $sql = "UPDATE " . static::$table_name . " SET ";
+      $sql .= join(', ', $attribute_pairs);
+      $sql .= " WHERE id='" . self::$database->escape_string($this->id) . "' ";
+      $sql .= " AND user_id='" . self::$database->escape_string($this->user_id) . "' ";
+      $sql .= "LIMIT 1";
+      $result = self::$database->query($sql);
+      return $result;
+    } else {
+      return 'No record found.';
+    }
+
+  }
+
   public function save() {
     // A new record will not have an ID yet
     if(isset($this->id)) {
       return $this->update();
+    } else {
+      return $this->create();
+    }
+  }
+
+  public function save_by_user_id() {
+    // A new record will not have an ID yet
+    if(isset($this->id)) {
+      return $this->update_by_user_id();
     } else {
       return $this->create();
     }
@@ -140,6 +195,30 @@ class DatabaseObject {
     $sql .= "LIMIT 1";
     $result = self::$database->query($sql);
     return $result;
+
+    // After deleting, the instance of the object will still
+    // exist, even though the database record does not.
+    // This can be useful, as in:
+    //   echo $user->first_name . " was deleted.";
+    // but, for example, we can't call $user->update() after
+    // calling $user->delete().
+  }
+
+  public function delete_by_user_id() {
+    $sql = "SELECT * FROM " . static::$table_name . " ";
+    $sql .= " WHERE id='" . self::$database->escape_string($this->id) . "' ";
+    $sql .= " AND user_id='" . self::$database->escape_string($this->user_id) . "' ";
+    $check_if_exists = self::$database->query($sql);
+    if ($check_if_exists->num_rows > 0) {      
+      $sql = "DELETE FROM " . static::$table_name . " ";
+      $sql .= "WHERE id='" . self::$database->escape_string($this->id) . "' ";
+      $sql .= "AND user_id='" . self::$database->escape_string($this->user_id) . "' ";
+      $sql .= "LIMIT 1";
+      $result = self::$database->query($sql);
+      return $result;
+    } else {
+      return 'Record not found.';
+    }
 
     // After deleting, the instance of the object will still
     // exist, even though the database record does not.

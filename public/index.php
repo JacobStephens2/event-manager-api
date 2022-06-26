@@ -99,8 +99,10 @@ $app->post('/event',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $event = new Event($requestBody);
-        $event->merge_attributes($requestBody);
+        $requestBodyWithUserID = $requestBody;
+        $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        $event = new Event();
+        $event->merge_attributes($requestBodyWithUserID);
         $event->save();
         $responseBody = json_encode($event);
         $response->getBody()->write($responseBody);
@@ -119,7 +121,7 @@ $app->get('/events',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $events = Event::find_all();
+        $events = Event::find_all_by_user_id($access_token->user_id);
         $responseBody = json_encode($events);
         $response->getBody()->write($responseBody);
         return $response;
@@ -138,7 +140,7 @@ $app->get('/event/{id}',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $event = Event::find_by_id($id);
+        $event = Event::find_by_id_and_user_id($id, $access_token->user_id);
         $responseBody = json_encode($event);
         $response->getBody()->write($responseBody);
         return $response;
@@ -157,10 +159,16 @@ $app->put('/event',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $event = new Event($requestBody);
-        $event->merge_attributes($requestBody);
-        $event->save();
-        $responseBody = json_encode($event);
+        $requestBodyWithUserID = $requestBody;
+        $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        $event = new Event();
+        $event->merge_attributes($requestBodyWithUserID);
+        $result = $event->save_by_user_id();
+        if ($result === true) {
+            $responseBody = json_encode($event);
+        } else {
+            $responseBody = json_encode($result);
+        }
         $response->getBody()->write($responseBody);
         return $response;
     }
@@ -178,10 +186,16 @@ $app->delete('/event',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $event = new Event($requestBody);
-        $event->merge_attributes($requestBody);
-        $event->delete();
-        $responseBody = json_encode($event);
+        $requestBodyWithUserID = $requestBody;
+        $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        $event = new Event();
+        $event->merge_attributes($requestBodyWithUserID);
+        $result = $event->delete_by_user_id();
+        if ($result === true) {
+            $responseBody = json_encode($event);
+        } else {
+            $responseBody = json_encode($result);
+        }
         $response->getBody()->write($responseBody);
         return $response;
     }
@@ -200,8 +214,10 @@ $app->post('/client',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $client = new Client($requestBody);
-        $client->merge_attributes($requestBody);
+        $requestBodyWithUserID = $requestBody;
+        $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        $client = new Client();
+        $client->merge_attributes($requestBodyWithUserID);
         $client->save();
         $responseBody = json_encode($client);
         $response->getBody()->write($responseBody);
@@ -220,7 +236,7 @@ $app->get('/clients',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $clients = Client::find_all();
+        $clients = Client::find_all_by_user_id($access_token->user_id);
         $responseBody = json_encode($clients);
         $response->getBody()->write($responseBody);
         return $response;
@@ -239,7 +255,7 @@ $app->get('/client/{id}',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $client = Client::find_by_id($id);
+        $client = Client::find_by_id_and_user_id($id, $access_token->user_id);
         $responseBody = json_encode($client);
         $response->getBody()->write($responseBody);
         return $response;
@@ -258,11 +274,16 @@ $app->put('/client',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $client = new Client($requestBody);
-        $client->merge_attributes($requestBody);
-        $client->save();
-        $responseBody = json_encode($client);
-        $response->getBody()->write($responseBody);
+        $requestBodyWithUserID = $requestBody;
+        $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        $client = new Client();
+        $client->merge_attributes($requestBodyWithUserID);
+        $result = $client->save_by_user_id();
+        if ($result === true) {
+            $responseBody = json_encode($client);
+        } else {
+            $responseBody = json_encode($result);
+        }        $response->getBody()->write($responseBody);
         return $response;
     }
 );
@@ -279,10 +300,16 @@ $app->delete('/client',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $client = new Client($requestBody);
-        $client->merge_attributes($requestBody);
-        $client->delete();
-        $responseBody = json_encode($client);
+        $requestBodyWithUserID = $requestBody;
+        $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        $client = new Client();
+        $client->merge_attributes($requestBodyWithUserID);
+        $result = $client->delete_by_user_id();
+        if ($result === true) {
+            $responseBody = json_encode($client);
+        } else {
+            $responseBody = json_encode($result);
+        }
         $response->getBody()->write($responseBody);
         return $response;
     }
