@@ -324,22 +324,28 @@ $app->get('/',
             'UI Repository'=>'https://github.com/JacobStephens2/event-manager-ui',
             'API Origin'=>$_ENV['API_ORIGIN'],
             'API Repository'=>'https://github.com/JacobStephens2/event-manager-api',
-            'endpoints'=>array(
+            'endpoints' => array(
                 'GET /'=>$_ENV['API_ORIGIN'] . '/',
                 'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
                 'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
-                'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
-                'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up',
-                'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
-                'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
-                'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
-                'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
-                'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event',
-                'GET /clients'=>$_ENV['API_ORIGIN'] . '/clients',
-                'GET /client/{id}'=>$_ENV['API_ORIGIN'] . '/clients/1',
-                'POST /client'=>$_ENV['API_ORIGIN'] . '/client',
-                'PUT /client'=>$_ENV['API_ORIGIN'] . '/client',
-                'DELETE /client'=>$_ENV['API_ORIGIN'] . '/client'
+                'users' => array(
+                    'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
+                    'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up'
+                ),
+                'events' => array(
+                    'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
+                    'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
+                    'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
+                    'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
+                    'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event'
+                ),
+                'clients' => array(
+                    'GET /clients'=>$_ENV['API_ORIGIN'] . '/clients',
+                    'GET /client/{id}'=>$_ENV['API_ORIGIN'] . '/clients/1',
+                    'POST /client'=>$_ENV['API_ORIGIN'] . '/client',
+                    'PUT /client'=>$_ENV['API_ORIGIN'] . '/client',
+                    'DELETE /client'=>$_ENV['API_ORIGIN'] . '/client'
+                )
             )
         );
         $payload = json_encode($message);
