@@ -140,9 +140,22 @@ $app->post('/event',
         }
         $requestBodyWithUserID = $requestBody;
         $requestBodyWithUserID['user_id'] = $access_token->user_id;
+        // Save event
         $event = new Event();
         $event->merge_attributes($requestBodyWithUserID);
         $event->save();
+
+        // Relate event to client if client id submitted
+        if ($requestBody['client_id'] != null) {
+            $client_event_data['client_id'] = $requestBody['client_id'];
+            $client_event_data['event_id'] = $event->id;
+            $client_event_data['user_id'] = $access_token->user_id;
+            $client_event = new ClientEvent();
+            $client_event->merge_attributes($client_event_data);
+            $client_event->save();
+        }
+
+        // $event->relate_event_to_client($event->event_id, $requestBody->client_id);
         $responseBody = json_encode($event);
         $response->getBody()->write($responseBody);
         return $response;
