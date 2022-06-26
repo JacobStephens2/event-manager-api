@@ -86,3 +86,31 @@ Submit a JSON body in the request like the following:
 `{
     "message": "Hello, world!"
 }`
+
+### GET /events
+Get all events.
+
+### GET /event/{id}
+Get a specific event by id.
+
+### POST /event
+Create an event.
+
+`{
+    "name": "Commencement"
+}`
+
+### PUT /event
+Update an event by id passed as id in the JSON body of the request.
+
+`{
+    "id": "1",
+    "name": "North Point Commencement"
+}`
+
+### DELETE /event
+Update an event by id passed as id in the JSON body of the request.
+
+`{
+    "id": "1"
+}`
