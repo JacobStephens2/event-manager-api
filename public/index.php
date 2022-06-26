@@ -12,60 +12,21 @@ $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 
 // Define app routes
-$app->get('/', 
-    function( Request $request, Response $response, $args ) {
-        $message = array(
-            'message'=>'Hello from the Event Manager API',
-            'UI Origin'=>$_ENV['REQUEST_ORIGIN'],
-            'UI Repository'=>'https://github.com/JacobStephens2/event-manager-ui',
-            'API Origin'=>$_ENV['API_ORIGIN'],
-            'API Repository'=>'https://github.com/JacobStephens2/event-manager-api',
-            'endpoints'=>array(
-                'GET /'=>$_ENV['API_ORIGIN'] . '/',
-                'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
-                'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
-                'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
-                'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up',
-                'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
-                'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
-                'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
-                'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
-                'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event'
-            )
-        );
-        $payload = json_encode($message);
-        $response->getBody()->write($payload);
-        return $response;
-    }
-);
 
-$app->post('/', 
-    function( Request $request, Response $response, $args ) {
-        $message = array(
-            'message'=>'Hello from the Event Manager API',
-        );
-        $payload = json_encode($message);
-        $response->getBody()->write($payload);
-        return $response;
-    }
-);
-
-$app->post('/mimic-json', 
+// Users
+$app->post('/sign-up', 
     function( Request $request, Response $response, $args ) {
         $requestBody = $request->getParsedBody();  
-        $responseBody = json_encode($requestBody);
-        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        $response->getBody()->write($responseBody);
-        return $response;
-    }
-);
-
-$app->get('/hello/{name}', 
-    function (Request $request, Response $response, $args) {
-        $name = $args['name'];
-        $message = array('message'=>"Hello, $name");
-        $responseBody = json_encode($message);
-        $response->getBody()->write($responseBody);
+        $user = new User($requestBody);
+        $result = $user->createUser( $requestBody['email'], $requestBody['password'] );
+        $responseBody = new stdClass();
+        if( $result ) {
+            $responseBody->message = 'Account creation succeeded';
+        } else {
+            $responseBody->message = 'Use a different email address';
+        }
+        $responseBodyJSON = json_encode($responseBody);
+        $response->getBody()->write($responseBodyJSON);
         return $response;
     }
 );
@@ -125,23 +86,7 @@ $app->post('/login',
     }
 );
 
-$app->post('/sign-up', 
-    function( Request $request, Response $response, $args ) {
-        $requestBody = $request->getParsedBody();  
-        $user = new User($requestBody);
-        $result = $user->createUser( $requestBody['email'], $requestBody['password'] );
-        $responseBody = new stdClass();
-        if( $result ) {
-            $responseBody->message = 'Account creation succeeded';
-        } else {
-            $responseBody->message = 'Use a different email address';
-        }
-        $responseBodyJSON = json_encode($responseBody);
-        $response->getBody()->write($responseBodyJSON);
-        return $response;
-    }
-);
-
+// Events
 $app->post('/event',
     function( Request $request, Response $response, $args ) {
         $requestBody = $request->getParsedBody();  
@@ -242,11 +187,177 @@ $app->delete('/event',
     }
 );
 
+// Clients
+$app->post('/client',
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $client = new Client($requestBody);
+        $client->merge_attributes($requestBody);
+        $client->save();
+        $responseBody = json_encode($client);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->get('/clients',
+    function( Request $request, Response $response, $args ) {
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $clients = Client::find_all();
+        $responseBody = json_encode($clients);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->get('/client/{id}',
+    function( Request $request, Response $response, $args ) {
+        $id = $args['id'];
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $client = Client::find_by_id($id);
+        $responseBody = json_encode($client);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->put('/client',
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $client = new Client($requestBody);
+        $client->merge_attributes($requestBody);
+        $client->save();
+        $responseBody = json_encode($client);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->delete('/client',
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $client = new Client($requestBody);
+        $client->merge_attributes($requestBody);
+        $client->delete();
+        $responseBody = json_encode($client);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+// Other
+$app->get('/', 
+    function( Request $request, Response $response, $args ) {
+        $message = array(
+            'message'=>'Hello from the Event Manager API',
+            'UI Origin'=>$_ENV['REQUEST_ORIGIN'],
+            'UI Repository'=>'https://github.com/JacobStephens2/event-manager-ui',
+            'API Origin'=>$_ENV['API_ORIGIN'],
+            'API Repository'=>'https://github.com/JacobStephens2/event-manager-api',
+            'endpoints'=>array(
+                'GET /'=>$_ENV['API_ORIGIN'] . '/',
+                'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
+                'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
+                'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
+                'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up',
+                'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
+                'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
+                'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
+                'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
+                'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event',
+                'GET /clients'=>$_ENV['API_ORIGIN'] . '/clients',
+                'GET /client/{id}'=>$_ENV['API_ORIGIN'] . '/clients/1',
+                'POST /client'=>$_ENV['API_ORIGIN'] . '/client',
+                'PUT /client'=>$_ENV['API_ORIGIN'] . '/client',
+                'DELETE /client'=>$_ENV['API_ORIGIN'] . '/client'
+            )
+        );
+        $payload = json_encode($message);
+        $response->getBody()->write($payload);
+        return $response;
+    }
+);
+
+$app->post('/', 
+    function( Request $request, Response $response, $args ) {
+        $message = array(
+            'message'=>'Hello from the Event Manager API',
+        );
+        $payload = json_encode($message);
+        $response->getBody()->write($payload);
+        return $response;
+    }
+);
+
+$app->post('/mimic-json', 
+    function( Request $request, Response $response, $args ) {
+        $requestBody = $request->getParsedBody();  
+        $responseBody = json_encode($requestBody);
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->get('/hello/{name}', 
+    function (Request $request, Response $response, $args) {
+        $name = $args['name'];
+        $message = array('message'=>"Hello, $name");
+        $responseBody = json_encode($message);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
 if ($_ENV['ERROR_DISPLAY'] == 'false') {
     $error_display = false;
 } else {
     $error_display = true;
 }
+
 $app->addErrorMiddleware($error_display, true, true);
 
 $app->run();

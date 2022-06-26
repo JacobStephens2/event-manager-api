@@ -16,5 +16,6 @@ DatabaseObject::set_database($database);
 // Classes that extend DatabaseObject
 require_once('private/classes/User.class.php');
 require_once('private/classes/Event.class.php');
+require_once('private/classes/Client.class.php');
 
 ?>

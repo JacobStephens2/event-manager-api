@@ -9,15 +9,9 @@ This project has been developed to run on a server running PHP 8 (https://www.ph
 
 ## Routes
 
-### GET /
+### Users
 
-https://api.eventmanager.stewardgoods.com/
-
-### GET /hello/{name}
-
-https://api.eventmanager.stewardgoods.com/hello/Jacob
-
-### POST /login
+#### POST /login
 
 https://api.eventmanager.stewardgoods.com/login
 
@@ -28,7 +22,7 @@ Submit a JSON body in the request like the following:
     "password": "goodPassword123"
 }`
 
-### POST /sign-up
+#### POST /sign-up
 
 https://api.eventmanager.stewardgoods.com/sign-up
 
@@ -39,7 +33,51 @@ Submit a JSON body in the request like the following:
     "password": "goodPassword123"
 }`
 
-### POST /mimic-json
+### Events
+
+#### GET /events
+Get all events.
+
+#### GET /event/{id}
+Get a specific event by id.
+
+#### POST /event
+Create an event.
+
+#### PUT /event
+Update an event by id passed as id in the JSON body of the request.
+
+### DELETE /event
+Update an event by id passed as id in the JSON body of the request.
+
+### Clients
+
+#### GET /clients
+Get all clients.
+
+#### GET /client/{id}
+Get a specific client by id.
+
+#### POST /client
+Create an client.
+
+#### PUT /client
+Update an client by id passed as id in the JSON body of the request.
+
+#### DELETE /client
+Update an client by id passed as id in the JSON body of the request.
+
+### Other
+
+#### GET /
+
+https://api.eventmanager.stewardgoods.com/
+
+#### GET /hello/{name}
+
+https://api.eventmanager.stewardgoods.com/hello/Jacob
+
+#### POST /mimic-json
 
 https://api.eventmanager.stewardgoods.com/mimic-json
 
@@ -48,18 +86,3 @@ Submit a JSON body in the request like the following:
 `{
     "message": "Hello, world!"
 }`
-
-### GET /events
-Get all events.
-
-### GET /event/{id}
-Get a specific event by id.
-
-### POST /event
-Create an event.
-
-### PUT /event
-Update an event by id passed as id in the JSON body of the request.
-
-### DELETE /event
-Update an event by id passed as id in the JSON body of the request.
