@@ -41,6 +41,7 @@ $app->get('/',
                 'clients' => array(
                     'GET /clients'=>$_ENV['API_ORIGIN'] . '/clients',
                     'GET /client/{id}'=>$_ENV['API_ORIGIN'] . '/clients/1',
+                    'GET /client/{id}/events'=>$_ENV['API_ORIGIN'] . '/clients/1/events',
                     'POST /client'=>$_ENV['API_ORIGIN'] . '/client',
                     'PUT /client'=>$_ENV['API_ORIGIN'] . '/client',
                     'DELETE /client'=>$_ENV['API_ORIGIN'] . '/client'
@@ -197,8 +198,8 @@ $app->get('/events',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $events = new Event();
-        $results = $events->get_events_and_clients_by_user_id($access_token->user_id);
+        $ClientEvents = new ClientEvent();
+        $results = $ClientEvents->get_events_and_clients_by_user_id($access_token->user_id);
         $responseBody = json_encode($results);
         $response->getBody()->write($responseBody);
         return $response;
@@ -325,7 +326,7 @@ $app->get('/clients',
 
 $app->get('/client/{id}',
     function( Request $request, Response $response, $args ) {
-        $id = $args['id'];
+        $client_id = $args['id'];
         $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $access_token = authenticate();
         if ($access_token == false) {
@@ -335,7 +336,7 @@ $app->get('/client/{id}',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $client = Client::find_by_id_and_user_id($id, $access_token->user_id);
+        $client = Client::find_by_id_and_user_id($client_id, $access_token->user_id);
         $responseBody = json_encode($client);
         $response->getBody()->write($responseBody);
         return $response;
@@ -394,6 +395,30 @@ $app->delete('/client',
         return $response;
     }
 );
+
+$app->get('/client/{id}/events',
+    function( Request $request, Response $response, $args ) {
+        $client_id = $args['id'];
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        $access_token = authenticate();
+        if ($access_token == false) {
+            $message = new stdClass();
+            $message->message = 'You have not been authorized to see this page';
+            $responseBody = json_encode($message);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+        $ClientEvents = new ClientEvent();
+        $results = $ClientEvents->get_events_by_client_id_and_by_user_id(
+            $client_id,
+            $access_token->user_id
+        );
+        $responseBody = json_encode($results);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
 
 // Other
 $app->post('/', 

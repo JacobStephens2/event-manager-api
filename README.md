@@ -60,7 +60,9 @@ Update an event by id passed as id in the JSON body of the request.
 Get all clients.
 
 #### GET /client/{id}
-Get a specific client by id.
+
+#### GET /client/{id}/events
+Get events associated with a particular client.
 
 #### POST /client
 Create an client.
