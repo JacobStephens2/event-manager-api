@@ -125,6 +125,29 @@ $app->post('/login',
     }
 );
 
+$app->post('/logout', 
+    function( Request $request, Response $response, $args ) {
+        $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        ( $_ENV['COOKIE_SECURE'] === 'true' ) 
+            ? $cookie_secure = true 
+            : $cookie_secure = false;
+        setcookie(
+            "access_token", // name
+            "loggedOut", // value
+            time() + (86400 * 7), // expire, 86400 = 1 day
+            "", // path
+            $_ENV['API_DOMAIN'], // domain
+            $cookie_secure, // secure
+            true // httponly
+        ); 
+        $message = new stdClass();
+        $message->logged_in = 'false';
+        $responseBody = json_encode($message);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
 // Events
 $app->post('/event',
     function( Request $request, Response $response, $args ) {
