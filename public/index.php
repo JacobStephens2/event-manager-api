@@ -146,16 +146,16 @@ $app->post('/event',
         $event->save();
 
         // Relate event to client if client id submitted
-        if ($requestBody['client_id'] != null) {
-            $client_event_data['client_id'] = $requestBody['client_id'];
-            $client_event_data['event_id'] = $event->id;
-            $client_event_data['user_id'] = $access_token->user_id;
-            $client_event = new ClientEvent();
-            $client_event->merge_attributes($client_event_data);
-            $client_event->save();
-        }
+        $client_event_data['client_id'] = $requestBody['client_id'];
+        $client_event_data['event_id'] = $event->id;
+        $client_event_data['user_id'] = $access_token->user_id;
+        $client_event = new ClientEvent();
+        $clientEventResult = $client_event->create_client_event_by_user_id(
+            $requestBody['client_id'],
+            $event->id,
+            $access_token->user_id
+        ); 
 
-        // $event->relate_event_to_client($event->event_id, $requestBody->client_id);
         $responseBody = json_encode($event);
         $response->getBody()->write($responseBody);
         return $response;
@@ -173,8 +173,9 @@ $app->get('/events',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $events = Event::find_all_by_user_id($access_token->user_id);
-        $responseBody = json_encode($events);
+        $events = new Event();
+        $results = $events->get_events_and_clients_by_user_id($access_token->user_id);
+        $responseBody = json_encode($results);
         $response->getBody()->write($responseBody);
         return $response;
     }
@@ -192,7 +193,10 @@ $app->get('/event/{id}',
             $response->getBody()->write($responseBody);
             return $response;
         }
-        $event = Event::find_by_id_and_user_id($id, $access_token->user_id);
+        $event = Event::find_by_id_and_user_id(
+            $id, 
+            $access_token->user_id
+        );
         $responseBody = json_encode($event);
         $response->getBody()->write($responseBody);
         return $response;
