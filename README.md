@@ -22,6 +22,10 @@ Submit a JSON body in the request like the following:
     "password": "goodPassword123"
 }`
 
+#### POST /logout
+
+Clear the Http Only access_token cookie.
+
 #### POST /sign-up
 
 https://api.eventmanager.stewardgoods.com/sign-up

@@ -28,6 +28,7 @@ $app->get('/',
                 'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
                 'users' => array(
                     'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
+                    'POST /logout'=>$_ENV['API_ORIGIN'] . '/logout',
                     'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up'
                 ),
                 'events' => array(
