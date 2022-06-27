@@ -23,8 +23,12 @@ class Event extends DatabaseObject {
               JOIN users ON users.id = clients_events.user_id 
             WHERE users.id = " . self::$database->escape_string($user_id);
     $result = self::$database->query($sql);
-    while($record = $result->fetch_assoc()) {
-      $object_array[] = $record;
+    if ($result->num_rows > 0) {
+      while($record = $result->fetch_assoc()) {
+        $object_array[] = $record;
+      }
+    } else {
+      $object_array = array();
     }
     return $object_array;
   }
