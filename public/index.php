@@ -3,6 +3,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Firebase\JWT\JWT;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 require __DIR__ . '/../initialize.php';
 
@@ -446,6 +449,49 @@ $app->get('/hello/{name}',
     function (Request $request, Response $response, $args) {
         $name = $args['name'];
         $message = array('message'=>"Hello, $name");
+        $responseBody = json_encode($message);
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
+$app->post('/email', 
+    function (Request $request, Response $response, $args) {
+        
+        echo function_exists('mail');
+
+        $mail = new PHPMailer(true);
+
+        try {
+            //Server settings
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            // $mail->isSMTP();                                            //Send using SMTP
+            // $mail->Host       = 'smtp.stewardgoods.com';                //Set the SMTP server to send through
+            // $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            // $mail->Username   = 'user@example.com';                     //SMTP username
+            // $mail->Password   = 'secret';                               //SMTP password
+            // $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            // $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+            //Recipients
+            $mail->setFrom('jacob@stewardgoods.com', 'Jacob');
+            $mail->addAddress('email@jacobstephens.net', 'Charles');     //Add a recipient
+            $mail->addAddress('jacob.stephens.701@gmail.com');               //Name is optional
+            $mail->addReplyTo('jacob@stewardgoods.com', 'Mr. Stephens');
+
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = 'Here is the subject';
+            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+            echo 'Message has been sent';
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
+
+        $message = array('message'=>"Hello");
         $responseBody = json_encode($message);
         $response->getBody()->write($responseBody);
         return $response;

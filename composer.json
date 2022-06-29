@@ -3,6 +3,7 @@
         "slim/slim": "4.*",
         "guzzlehttp/psr7": "2",
         "vlucas/phpdotenv": "^5.4",
-        "firebase/php-jwt": "^6.2"
+        "firebase/php-jwt": "^6.2",
+        "phpmailer/phpmailer": "^6.6"
     }
 }
