@@ -457,12 +457,13 @@ $app->get('/hello/{name}',
 
 $app->post('/email', 
     function (Request $request, Response $response, $args) {
-        
+        $requestBody = $request->getParsedBody();  
+
         $mail = new PHPMailer(true);
 
         try {
             //Server settings
-            $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
             $mail->Host       = 'smtp.sendgrid.net';                    //Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
@@ -473,23 +474,21 @@ $app->post('/email',
 
             //Recipients
             $mail->setFrom('jacob@stewardgoods.com', 'Jacob');
-            $mail->addAddress('email@jacobstephens.net', 'Charles');     //Add a recipient
-            $mail->addAddress('jacob.stephens.701@gmail.com');               //Name is optional
+            $mail->addAddress($requestBody['destinationEmail'], 'Charles');     //Add a recipient
             $mail->addReplyTo('jacob@stewardgoods.com', 'Mr. Stephens');
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = 'Here is the subject';
-            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->Body    = $requestBody['emailBody'];
             $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             $mail->send();
-            echo 'Message has been sent';
+            $message = array('message'=> 'Message has been sent');
         } catch (Exception $e) {
-            echo 'Caught exception: '. $e->getMessage() ."\n";
+            $message = array('message'=>'Caught exception: '. $e->getMessage() ."\n");
         }
         
-        $message = array('message'=>"Hello");
         $responseBody = json_encode($message);
         $response->getBody()->write($responseBody);
         return $response;
