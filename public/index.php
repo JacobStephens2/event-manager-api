@@ -458,22 +458,35 @@ $app->get('/hello/{name}',
 $app->post('/email', 
     function (Request $request, Response $response, $args) {
         
-        $email = new \SendGrid\Mail\Mail(); 
-        $email->setFrom("test@example.com", "Example User");
-        $email->setSubject("Sending with SendGrid is Fun");
-        $email->addTo("test@example.com", "Example User");
-        $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
-        $email->addContent(
-            "text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
-        );
-        $sendgrid = new \SendGrid($_ENV['SENDGRID_API_KEY']);
+        $mail = new PHPMailer(true);
+
         try {
-            $response = $sendgrid->send($email);
-            print $response->statusCode() . "\n";
-            print_r($response->headers());
-            print $response->body() . "\n";
+            //Server settings
+            $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            $mail->isSMTP();                                            //Send using SMTP
+            $mail->Host       = 'smtp.sendgrid.net';                    //Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            $mail->Username   = 'apikey';                               //SMTP username
+            $mail->Password   = $_ENV['SENDGRID_API_KEY'];              //SMTP password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+            //Recipients
+            $mail->setFrom('jacob@stewardgoods.com', 'Jacob');
+            $mail->addAddress('email@jacobstephens.net', 'Charles');     //Add a recipient
+            $mail->addAddress('jacob.stephens.701@gmail.com');               //Name is optional
+            $mail->addReplyTo('jacob@stewardgoods.com', 'Mr. Stephens');
+
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = 'Here is the subject';
+            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+            echo 'Message has been sent';
         } catch (Exception $e) {
-            echo 'Caught exception: '. $e->getMessage() ."\n";
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
         
         $message = array('message'=>"Hello");
