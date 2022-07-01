@@ -4,13 +4,14 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+$currentDate = new DateTime();
+
 require dirname(dirname(__DIR__)) . '/initialize.php';
 
 $mail = new PHPMailer(true);
 
 try {
     //Server settings
-    // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
     $mail->isSMTP();                                            //Send using SMTP
     $mail->Host       = 'smtp.sendgrid.net';                    //Set the SMTP server to send through
     $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
@@ -32,6 +33,8 @@ try {
 
     $mail->send();
     $message = array('message'=> 'Message has been sent');
+    echo 'email.php ran at ' . $currentDate->format('Y-m-d H:i:s');
 } catch (Exception $e) {
+    echo 'email.php exception caught at ' . $currentDate->format('Y-m-d H:i:s');
     $message = array('message'=>'Caught exception: '. $e->getMessage() ."\n");
 }
