@@ -1,0 +1,5 @@
+# general syntax for crontab
+a b c d e /directory/command output
+
+# run email.php every day at 9am, sending the output to cron.log, as well as errors
+0 9 * * * /var/www/eventmanager/api/private/cron_jobs/email.php >/var/www/eventmanager/api/private/cron_jobs/cron.log 2>&1
