@@ -3,11 +3,17 @@
 class Event extends DatabaseObject {
   
   static protected $table_name = 'events';
-  static protected $db_columns = ['id', 'name', 'user_id'];
+  static protected $db_columns = [
+    'id', 
+    'name', 
+    'user_id', 
+    'date'
+  ];
 
   public $id;
   public $name;
   public $user_id;
+  public $date;
 
   public function get_events_and_clients_by_user_id($user_id) {
     $sql = "SELECT 
