@@ -32,7 +32,8 @@ class ClientEvent extends DatabaseObject {
               JOIN events ON events.id = clients_events.event_id
               JOIN clients ON clients.id = clients_events.client_id
               JOIN users ON users.id = clients_events.user_id 
-            WHERE users.id = " . self::$database->escape_string($user_id);
+            WHERE users.id = " . self::$database->escape_string($user_id) . "
+            ORDER BY event_date ASC";
     $result = self::$database->query($sql);
     if ($result->num_rows > 0) {
       while($record = $result->fetch_assoc()) {
@@ -58,7 +59,8 @@ class ClientEvent extends DatabaseObject {
               JOIN clients ON clients.id = clients_events.client_id
               JOIN users ON users.id = clients_events.user_id 
             WHERE users.id = " . self::$database->escape_string($user_id) . "
-            AND clients.id = " . self::$database->escape_string($client_id);
+            AND clients.id = " . self::$database->escape_string($client_id) . "
+            ORDER BY event_date ASC";
     $result = self::$database->query($sql);
     if ($result->num_rows > 0) {
       while($record = $result->fetch_assoc()) {
