@@ -23,6 +23,7 @@ class ClientEvent extends DatabaseObject {
     $sql = "SELECT 
               clients_events.id AS id,
               events.name AS event_name,
+              events.date AS event_date,
               events.id AS event_id,
               clients.name AS client_name,
               clients.id AS client_id,
