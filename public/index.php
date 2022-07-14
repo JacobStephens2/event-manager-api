@@ -52,6 +52,8 @@ $app->addBodyParsingMiddleware();
                 )
             );
             $payload = json_encode($message);
+            $accessControlAllowOrigin = $_ENV['REQUEST_ORIGIN'];          
+            $response = $response->withHeader('Access-Control-Allow-Origin', $accessControlAllowOrigin);
             $response->getBody()->write($payload);
             return $response;
         }
@@ -426,13 +428,153 @@ $app->addBodyParsingMiddleware();
     );
 //
 
+// Tasks
+    $app->post('/task',
+        function( Request $request, Response $response, $args ) {
+            $requestBody = $request->getParsedBody();  
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $requestBodyWithUserID = $requestBody;
+            $requestBodyWithUserID['user_id'] = $access_token->user_id;
+            $task = new task();
+            $task->merge_attributes($requestBodyWithUserID);
+            $task->save();
+            $responseBody = json_encode($task);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->get('/tasks',
+        function( Request $request, Response $response, $args ) {
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $tasks = task::find_all_by_user_id($access_token->user_id);
+            $responseBody = json_encode($tasks);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->get('/task/{id}',
+        function( Request $request, Response $response, $args ) {
+            $task_id = $args['id'];
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $task = task::find_by_id_and_user_id($task_id, $access_token->user_id);
+            $responseBody = json_encode($task);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->put('/task',
+        function( Request $request, Response $response, $args ) {
+            $requestBody = $request->getParsedBody();  
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $requestBodyWithUserID = $requestBody;
+            $requestBodyWithUserID['user_id'] = $access_token->user_id;
+            $task = new task();
+            $task->merge_attributes($requestBodyWithUserID);
+            $result = $task->save_by_user_id();
+            if ($result === true) {
+                $responseBody = json_encode($task);
+            } else {
+                $responseBody = json_encode($result);
+            }        $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->delete('/task',
+        function( Request $request, Response $response, $args ) {
+            $requestBody = $request->getParsedBody();  
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $requestBodyWithUserID = $requestBody;
+            $requestBodyWithUserID['user_id'] = $access_token->user_id;
+            $task = new task();
+            $task->merge_attributes($requestBodyWithUserID);
+            $result = $task->delete_by_user_id();
+            if ($result === true) {
+                $responseBody = json_encode($task);
+            } else {
+                $responseBody = json_encode($result);
+            }
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->get('/task/{id}/events',
+        function( Request $request, Response $response, $args ) {
+            $task_id = $args['id'];
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $taskEvents = new taskEvent();
+            $results = $taskEvents->get_events_by_task_id_and_by_user_id(
+                $task_id,
+                $access_token->user_id
+            );
+            $responseBody = json_encode($results);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+//
+
 // Other
     $app->post('/', 
         function( Request $request, Response $response, $args ) {
             $message = array(
                 'message'=>'Hello from the Event Manager API',
             );
-            $payload = json_encode($message);
+            $payload = json_encode($message);  
+            $accessControlAllowOrigin = $_ENV['REQUEST_ORIGIN'];          
+            $response = $response->withHeader('Access-Control-Allow-Origin', $accessControlAllowOrigin);
             $response->getBody()->write($payload);
             return $response;
         }
