@@ -482,7 +482,7 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $task = task::find_by_id_and_user_id($task_id, $access_token->user_id);
+            $task = Task::find_by_id_and_user_id($task_id, $access_token->user_id);
             $responseBody = json_encode($task);
             $response->getBody()->write($responseBody);
             return $response;
