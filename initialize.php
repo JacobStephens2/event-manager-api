@@ -18,6 +18,6 @@ require_once('private/classes/User.class.php');
 require_once('private/classes/Event.class.php');
 require_once('private/classes/Client.class.php');
 require_once('private/classes/ClientEvent.class.php');
-require_once('private/classes/Task.class.php');
+require_once('private/classes/EventTask.class.php');
 
 ?>

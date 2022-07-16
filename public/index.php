@@ -428,8 +428,8 @@ $app->addBodyParsingMiddleware();
     );
 //
 
-// Tasks
-    $app->post('/task',
+// Event Tasks
+    $app->post('/event-task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -452,7 +452,7 @@ $app->addBodyParsingMiddleware();
         }
     );
 
-    $app->get('/tasks',
+    $app->get('/event-tasks',
         function( Request $request, Response $response, $args ) {
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
             $access_token = authenticate();
@@ -463,14 +463,14 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $tasks = task::find_all_by_user_id($access_token->user_id);
+            $tasks = EventTask::find_all_by_user_id($access_token->user_id);
             $responseBody = json_encode($tasks);
             $response->getBody()->write($responseBody);
             return $response;
         }
     );
 
-    $app->get('/task/{id}',
+    $app->get('/event-task/{id}',
         function( Request $request, Response $response, $args ) {
             $task_id = $args['id'];
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -482,14 +482,14 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $task = Task::find_by_id_and_user_id($task_id, $access_token->user_id);
+            $task = EventTask::find_by_id_and_user_id($task_id, $access_token->user_id);
             $responseBody = json_encode($task);
             $response->getBody()->write($responseBody);
             return $response;
         }
     );
 
-    $app->put('/task',
+    $app->put('/event-task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -503,7 +503,7 @@ $app->addBodyParsingMiddleware();
             }
             $requestBodyWithUserID = $requestBody;
             $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $task = new task();
+            $task = new EventTask();
             $task->merge_attributes($requestBodyWithUserID);
             $result = $task->save_by_user_id();
             if ($result === true) {
@@ -515,7 +515,7 @@ $app->addBodyParsingMiddleware();
         }
     );
 
-    $app->delete('/task',
+    $app->delete('/event-task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -529,7 +529,7 @@ $app->addBodyParsingMiddleware();
             }
             $requestBodyWithUserID = $requestBody;
             $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $task = new task();
+            $task = new EventTask();
             $task->merge_attributes($requestBodyWithUserID);
             $result = $task->delete_by_user_id();
             if ($result === true) {
@@ -541,30 +541,6 @@ $app->addBodyParsingMiddleware();
             return $response;
         }
     );
-
-    $app->get('/task/{id}/events',
-        function( Request $request, Response $response, $args ) {
-            $task_id = $args['id'];
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $taskEvents = new taskEvent();
-            $results = $taskEvents->get_events_by_task_id_and_by_user_id(
-                $task_id,
-                $access_token->user_id
-            );
-            $responseBody = json_encode($results);
-            $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-//
 
 // Other
     $app->post('/', 

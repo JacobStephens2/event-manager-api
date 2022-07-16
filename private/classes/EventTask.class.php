@@ -1,15 +1,14 @@
 <?php
 
-class Task extends DatabaseObject {
+class EventTask extends DatabaseObject {
   
-  static protected $table_name = 'tasks';
+  static protected $table_name = 'event_tasks';
   static protected $db_columns = [
     'id', 
     'description', 
     'due_date', 
     'user_id', 
-    'event_id', 
-    'client_id'
+    'event_id'
   ];
 
   public $id;
@@ -17,7 +16,6 @@ class Task extends DatabaseObject {
   public $due_date;
   public $user_id;
   public $event_id;
-  public $client_id;
 
 }
 
