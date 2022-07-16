@@ -463,7 +463,8 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $tasks = EventTask::find_all_by_user_id($access_token->user_id);
+            $event_tasks = new EventTask;
+            $tasks = $event_tasks->get_tasks_and_events_by_user_id($access_token->user_id);
             $responseBody = json_encode($tasks);
             $response->getBody()->write($responseBody);
             return $response;
