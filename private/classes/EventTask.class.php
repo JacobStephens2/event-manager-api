@@ -8,7 +8,8 @@ class EventTask extends DatabaseObject {
     'description', 
     'due_date', 
     'user_id', 
-    'event_id'
+    'event_id',
+    'status'
   ];
 
   public $id;
@@ -16,6 +17,7 @@ class EventTask extends DatabaseObject {
   public $due_date;
   public $user_id;
   public $event_id;
+  public $status;
 
   public function get_tasks_and_events_by_user_id($user_id) {
     $sql = "SELECT 
