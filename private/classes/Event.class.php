@@ -39,6 +39,33 @@ class Event extends DatabaseObject {
     return $object_array;
   }
 
+  public function get_tasks_by_event_id_and_by_user_id($event_id, $user_id) {
+    $sql = "SELECT 
+              event_tasks.id AS task_id,
+              event_tasks.description AS task_description,
+              event_tasks.due_date AS task_due_date,
+              event_tasks.status AS task_status,
+              events.name AS event_name,
+              events.date AS event_date,
+              events.id AS event_id,
+              users.id AS user_id
+            FROM events
+              JOIN event_tasks ON events.id = event_tasks.event_id
+              JOIN users ON users.id = event_tasks.user_id 
+            WHERE users.id = " . self::$database->escape_string($user_id) . "
+              AND events.id = " . self::$database->escape_string($event_id) . "
+            ORDER BY event_date ASC";
+    $result = self::$database->query($sql);
+    if ($result->num_rows > 0) {
+      while($record = $result->fetch_assoc()) {
+        $object_array[] = $record;
+      }
+    } else {
+      $object_array = array();
+    }
+    return $object_array;
+  }
+
 }
 
 ?>
