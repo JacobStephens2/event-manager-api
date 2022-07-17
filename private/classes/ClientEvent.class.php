@@ -21,7 +21,7 @@ class ClientEvent extends DatabaseObject {
 
   public function get_events_and_clients_by_user_id($user_id) {
     $sql = "SELECT 
-              clients_events.id AS id,
+              clients_events.id AS client_event_id,
               events.name AS event_name,
               events.date AS event_date,
               events.id AS event_id,
