@@ -443,7 +443,7 @@ $app->addBodyParsingMiddleware();
             }
             $requestBodyWithUserID = $requestBody;
             $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $task = new task();
+            $task = new EventTask();
             $task->merge_attributes($requestBodyWithUserID);
             $task->save();
             $responseBody = json_encode($task);
