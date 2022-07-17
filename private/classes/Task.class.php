@@ -1,8 +1,8 @@
 <?php
 
-class EventTask extends DatabaseObject {
+class Task extends DatabaseObject {
   
-  static protected $table_name = 'event_tasks';
+  static protected $table_name = 'tasks';
   static protected $db_columns = [
     'id', 
     'description', 
@@ -21,16 +21,16 @@ class EventTask extends DatabaseObject {
 
   public function get_tasks_and_events_by_user_id($user_id) {
     $sql = "SELECT 
-              event_tasks.id,
-              event_tasks.description,
-              event_tasks.due_date,
-              event_tasks.status,
+              tasks.id,
+              tasks.description,
+              tasks.due_date,
+              tasks.status,
               events.name AS event_name,
               events.id AS event_id,
               users.id AS user_id
-            FROM event_tasks
-              JOIN events ON events.id = event_tasks.event_id
-              JOIN users ON users.id = event_tasks.user_id 
+            FROM tasks
+              JOIN events ON events.id = tasks.event_id
+              JOIN users ON users.id = tasks.user_id 
             WHERE users.id = " . self::$database->escape_string($user_id);
     $result = self::$database->query($sql);
     if ($result->num_rows > 0) {

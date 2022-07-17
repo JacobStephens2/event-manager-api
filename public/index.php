@@ -409,7 +409,7 @@ $app->addBodyParsingMiddleware();
 //
 
 // Event Tasks
-    $app->post('/event-task',
+    $app->post('/task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -423,7 +423,7 @@ $app->addBodyParsingMiddleware();
             }
             $requestBodyWithUserID = $requestBody;
             $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $task = new EventTask();
+            $task = new Task();
             $task->merge_attributes($requestBodyWithUserID);
             $task->save();
             $responseBody = json_encode($task);
@@ -432,7 +432,7 @@ $app->addBodyParsingMiddleware();
         }
     );
 
-    $app->get('/event-tasks',
+    $app->get('/tasks',
         function( Request $request, Response $response, $args ) {
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
             $access_token = authenticate();
@@ -443,15 +443,15 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $event_tasks = new EventTask;
-            $tasks = $event_tasks->get_tasks_and_events_by_user_id($access_token->user_id);
+            $Task = new Task;
+            $tasks = $Task->get_tasks_and_events_by_user_id($access_token->user_id);
             $responseBody = json_encode($tasks);
             $response->getBody()->write($responseBody);
             return $response;
         }
     );
 
-    $app->get('/event-task/{id}',
+    $app->get('/task/{id}',
         function( Request $request, Response $response, $args ) {
             $task_id = $args['id'];
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -463,14 +463,14 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $task = EventTask::find_by_id_and_user_id($task_id, $access_token->user_id);
+            $task = Task::find_by_id_and_user_id($task_id, $access_token->user_id);
             $responseBody = json_encode($task);
             $response->getBody()->write($responseBody);
             return $response;
         }
     );
 
-    $app->put('/event-task',
+    $app->put('/task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -484,7 +484,7 @@ $app->addBodyParsingMiddleware();
             }
             $requestBodyWithUserID = $requestBody;
             $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $task = new EventTask();
+            $task = new Task();
             $task->merge_attributes($requestBodyWithUserID);
             $result = $task->save_by_user_id();
             if ($result === true) {
@@ -496,7 +496,7 @@ $app->addBodyParsingMiddleware();
         }
     );
 
-    $app->delete('/event-task',
+    $app->delete('/task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -510,7 +510,7 @@ $app->addBodyParsingMiddleware();
             }
             $requestBodyWithUserID = $requestBody;
             $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $task = new EventTask();
+            $task = new Task();
             $task->merge_attributes($requestBodyWithUserID);
             $result = $task->delete_by_user_id();
             if ($result === true) {
