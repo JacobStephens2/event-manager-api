@@ -508,6 +508,7 @@ $app->addBodyParsingMiddleware();
             return $response;
         }
     );
+//
 
 // Other
     $app->get('/', 
@@ -519,20 +520,10 @@ $app->addBodyParsingMiddleware();
                 'API Origin'=>$_ENV['API_ORIGIN'],
                 'API Repository'=>'https://github.com/JacobStephens2/event-manager-api',
                 'endpoints' => array(
-                    'GET /'=>$_ENV['API_ORIGIN'] . '/',
-                    'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
-                    'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json',
                     'users' => array(
                         'POST /login'=>$_ENV['API_ORIGIN'] . '/login',
                         'POST /logout'=>$_ENV['API_ORIGIN'] . '/logout',
                         'POST /sign-up'=>$_ENV['API_ORIGIN'] . '/sign-up'
-                    ),
-                    'events' => array(
-                        'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
-                        'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
-                        'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
-                        'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
-                        'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event'
                     ),
                     'clients' => array(
                         'GET /clients'=>$_ENV['API_ORIGIN'] . '/clients',
@@ -541,6 +532,27 @@ $app->addBodyParsingMiddleware();
                         'POST /client'=>$_ENV['API_ORIGIN'] . '/client',
                         'PUT /client'=>$_ENV['API_ORIGIN'] . '/client',
                         'DELETE /client'=>$_ENV['API_ORIGIN'] . '/client'
+                    ),
+                    'events' => array(
+                        'GET /events'=>$_ENV['API_ORIGIN'] . '/events',
+                        'GET /event/{id}'=>$_ENV['API_ORIGIN'] . '/events/1',
+                        'GET /event/{id}/tasks'=>$_ENV['API_ORIGIN'] . '/events/1/tasks',
+                        'POST /event'=>$_ENV['API_ORIGIN'] . '/event',
+                        'PUT /event'=>$_ENV['API_ORIGIN'] . '/event',
+                        'DELETE /event'=>$_ENV['API_ORIGIN'] . '/event'
+                    ),
+                    'tasks' => array(
+                        'GET /tasks'=>$_ENV['API_ORIGIN'] . '/tasks',
+                        'GET /task/{id}'=>$_ENV['API_ORIGIN'] . '/tasks/1',
+                        'POST /task'=>$_ENV['API_ORIGIN'] . '/task',
+                        'PUT /task'=>$_ENV['API_ORIGIN'] . '/task',
+                        'DELETE /task'=>$_ENV['API_ORIGIN'] . '/task'
+                    ),
+                    'other' => array(
+                        'GET /'=>$_ENV['API_ORIGIN'] . '/',
+                        'GET /hello/{name}'=>$_ENV['API_ORIGIN'] . '/hello/Jacob',
+                        'POST /'=>$_ENV['API_ORIGIN'] . '/',
+                        'POST /mimic-json'=>$_ENV['API_ORIGIN'] . '/mimic-json'
                     )
                 )
             );
