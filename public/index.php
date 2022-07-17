@@ -239,8 +239,7 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $ClientEvents = new ClientEvent();
-            $results = $ClientEvents->get_events_by_client_id_and_by_user_id(
+            $results = Event::get_events_by_client_id_and_by_user_id(
                 $client_id,
                 $access_token->user_id
             );
@@ -271,17 +270,6 @@ $app->addBodyParsingMiddleware();
             $event->merge_attributes($requestBodyWithUserID);
             $event->save();
 
-            // Relate event to client if client id submitted
-            $client_event_data['client_id'] = $requestBody['client_id'];
-            $client_event_data['event_id'] = $event->id;
-            $client_event_data['user_id'] = $access_token->user_id;
-            $client_event = new ClientEvent();
-            $clientEventResult = $client_event->create_client_event_by_user_id(
-                $requestBody['client_id'],
-                $event->id,
-                $access_token->user_id
-            ); 
-
             $responseBody = json_encode($event);
             $response->getBody()->write($responseBody);
             return $response;
@@ -299,8 +287,7 @@ $app->addBodyParsingMiddleware();
                 $response->getBody()->write($responseBody);
                 return $response;
             }
-            $ClientEvents = new ClientEvent();
-            $results = $ClientEvents->get_events_and_clients_by_user_id($access_token->user_id);
+            $results = Event::get_events_and_clients_by_user_id($access_token->user_id);
             $responseBody = json_encode($results);
             $response->getBody()->write($responseBody);
             return $response;
@@ -351,7 +338,6 @@ $app->addBodyParsingMiddleware();
             return $response;
         }
     );
-
 
     $app->put('/event',
         function( Request $request, Response $response, $args ) {
