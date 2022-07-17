@@ -1,4 +1,4 @@
 vendor
 .env
-public/.htaccesss
 cron.log
+public/.htaccess
