@@ -113,6 +113,144 @@ $app->addBodyParsingMiddleware();
     );
 //
 
+// Clients
+    $app->post('/client',
+        function( Request $request, Response $response, $args ) {
+            $requestBody = $request->getParsedBody();  
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $requestBodyWithUserID = $requestBody;
+            $requestBodyWithUserID['user_id'] = $access_token->user_id;
+            $client = new Client();
+            $client->merge_attributes($requestBodyWithUserID);
+            $client->save();
+            $responseBody = json_encode($client);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->get('/clients',
+        function( Request $request, Response $response, $args ) {
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $clients = Client::find_all_by_user_id($access_token->user_id);
+            $responseBody = json_encode($clients);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->get('/client/{id}',
+        function( Request $request, Response $response, $args ) {
+            $client_id = $args['id'];
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $client = Client::find_by_id_and_user_id($client_id, $access_token->user_id);
+            $responseBody = json_encode($client);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->put('/client',
+        function( Request $request, Response $response, $args ) {
+            $requestBody = $request->getParsedBody();  
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $requestBodyWithUserID = $requestBody;
+            $requestBodyWithUserID['user_id'] = $access_token->user_id;
+            $client = new Client();
+            $client->merge_attributes($requestBodyWithUserID);
+            $result = $client->save_by_user_id();
+            if ($result === true) {
+                $responseBody = json_encode($client);
+            } else {
+                $responseBody = json_encode($result);
+            }        $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->delete('/client',
+        function( Request $request, Response $response, $args ) {
+            $requestBody = $request->getParsedBody();  
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $requestBodyWithUserID = $requestBody;
+            $requestBodyWithUserID['user_id'] = $access_token->user_id;
+            $client = new Client();
+            $client->merge_attributes($requestBodyWithUserID);
+            $result = $client->delete_by_user_id();
+            if ($result === true) {
+                $responseBody = json_encode($client);
+            } else {
+                $responseBody = json_encode($result);
+            }
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+
+    $app->get('/client/{id}/events',
+        function( Request $request, Response $response, $args ) {
+            $client_id = $args['id'];
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+            $access_token = authenticate();
+            if ($access_token == false) {
+                $message = new stdClass();
+                $message->message = 'You have not been authorized to see this page';
+                $responseBody = json_encode($message);
+                $response->getBody()->write($responseBody);
+                return $response;
+            }
+            $ClientEvents = new ClientEvent();
+            $results = $ClientEvents->get_events_by_client_id_and_by_user_id(
+                $client_id,
+                $access_token->user_id
+            );
+            $responseBody = json_encode($results);
+            $response->getBody()->write($responseBody);
+            return $response;
+        }
+    );
+//
+
 // Events
     $app->post('/event',
         function( Request $request, Response $response, $args ) {
@@ -270,145 +408,7 @@ $app->addBodyParsingMiddleware();
     );
 //
 
-// Clients
-    $app->post('/client',
-        function( Request $request, Response $response, $args ) {
-            $requestBody = $request->getParsedBody();  
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $requestBodyWithUserID = $requestBody;
-            $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $client = new Client();
-            $client->merge_attributes($requestBodyWithUserID);
-            $client->save();
-            $responseBody = json_encode($client);
-            $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-
-    $app->get('/clients',
-        function( Request $request, Response $response, $args ) {
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $clients = Client::find_all_by_user_id($access_token->user_id);
-            $responseBody = json_encode($clients);
-            $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-
-    $app->get('/client/{id}',
-        function( Request $request, Response $response, $args ) {
-            $client_id = $args['id'];
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $client = Client::find_by_id_and_user_id($client_id, $access_token->user_id);
-            $responseBody = json_encode($client);
-            $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-
-    $app->put('/client',
-        function( Request $request, Response $response, $args ) {
-            $requestBody = $request->getParsedBody();  
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $requestBodyWithUserID = $requestBody;
-            $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $client = new Client();
-            $client->merge_attributes($requestBodyWithUserID);
-            $result = $client->save_by_user_id();
-            if ($result === true) {
-                $responseBody = json_encode($client);
-            } else {
-                $responseBody = json_encode($result);
-            }        $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-
-    $app->delete('/client',
-        function( Request $request, Response $response, $args ) {
-            $requestBody = $request->getParsedBody();  
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $requestBodyWithUserID = $requestBody;
-            $requestBodyWithUserID['user_id'] = $access_token->user_id;
-            $client = new Client();
-            $client->merge_attributes($requestBodyWithUserID);
-            $result = $client->delete_by_user_id();
-            if ($result === true) {
-                $responseBody = json_encode($client);
-            } else {
-                $responseBody = json_encode($result);
-            }
-            $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-
-    $app->get('/client/{id}/events',
-        function( Request $request, Response $response, $args ) {
-            $client_id = $args['id'];
-            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-            $access_token = authenticate();
-            if ($access_token == false) {
-                $message = new stdClass();
-                $message->message = 'You have not been authorized to see this page';
-                $responseBody = json_encode($message);
-                $response->getBody()->write($responseBody);
-                return $response;
-            }
-            $ClientEvents = new ClientEvent();
-            $results = $ClientEvents->get_events_by_client_id_and_by_user_id(
-                $client_id,
-                $access_token->user_id
-            );
-            $responseBody = json_encode($results);
-            $response->getBody()->write($responseBody);
-            return $response;
-        }
-    );
-//
-
-// Event Tasks
+// Tasks
     $app->post('/task',
         function( Request $request, Response $response, $args ) {
             $requestBody = $request->getParsedBody();  
