@@ -19,6 +19,7 @@ class EventTask extends DatabaseObject {
 
   public function get_tasks_and_events_by_user_id($user_id) {
     $sql = "SELECT 
+              event_tasks.id,
               event_tasks.description,
               event_tasks.due_date,
               event_tasks.status,
