@@ -41,9 +41,9 @@ $app->addBodyParsingMiddleware();
             // verify user
             $user = new User();
             $verified_user = $user->verify_login_credentials( 
-                                        $requestBody['email'], 
-                                        $requestBody['password'] 
-                                    );
+                $requestBody['email'], 
+                $requestBody['password'] 
+            );
             // create response
             $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
             if( $verified_user ) {
