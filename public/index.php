@@ -27,6 +27,7 @@ $app->addBodyParsingMiddleware();
                 $responseBody->message = 'Account creation succeeded';
                 try {
                     $mail = new PHPMailer(true);
+                    $mail->CharSet    = 'UTF-8';
                     $mail->isSMTP();
                     $mail->Host       = 'smtp.sendgrid.net';
                     $mail->SMTPAuth   = true;
