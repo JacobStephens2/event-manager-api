@@ -17,14 +17,35 @@ $app->addBodyParsingMiddleware();
 // Define app routes
 
 // Users
-    $app->post('/sign-up', 
+    $app->post('/sign-up',
         function( Request $request, Response $response, $args ) {
-            $requestBody = $request->getParsedBody();  
+            $requestBody = $request->getParsedBody();
             $user = new User($requestBody);
             $result = $user->createUser( $requestBody['email'], $requestBody['password'] );
             $responseBody = new stdClass();
             if( $result ) {
                 $responseBody->message = 'Account creation succeeded';
+                try {
+                    $mail = new PHPMailer(true);
+                    $mail->isSMTP();
+                    $mail->Host       = 'smtp.sendgrid.net';
+                    $mail->SMTPAuth   = true;
+                    $mail->Username   = 'apikey';
+                    $mail->Password   = $_ENV['SENDGRID_API_KEY'];
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                    $mail->Port       = 465;
+                    $mail->setFrom('jacob@stewardgoods.com', 'Event Manager');
+                    $mail->addAddress('jacob@stephens.page');
+                    $ua = substr($request->getHeaderLine('User-Agent') ?: 'unknown', 0, 1024);
+                    $mail->Subject = 'Event Manager — New Account Created';
+                    $mail->Body = "A new account was created on Event Manager.\n\n"
+                        . "Email: " . ($requestBody['email'] ?? '') . "\n"
+                        . "Date: " . gmdate('c') . "\n"
+                        . "Device: " . $ua;
+                    $mail->send();
+                } catch (\Throwable $e) {
+                    error_log('Failed to send admin signup notification: ' . $e->getMessage());
+                }
             } else {
                 $responseBody->message = 'Use a different email address';
             }
