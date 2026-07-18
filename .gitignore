@@ -2,3 +2,5 @@ vendor
 .env
 cron.log
 public/.htaccess
+*.bak
+*.bak-*

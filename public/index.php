@@ -29,13 +29,13 @@ $app->addBodyParsingMiddleware();
                     $mail = new PHPMailer(true);
                     $mail->CharSet    = 'UTF-8';
                     $mail->isSMTP();
-                    $mail->Host       = 'smtp.sendgrid.net';
+                    $mail->Host       = 'smtp.resend.com';
                     $mail->SMTPAuth   = true;
-                    $mail->Username   = 'apikey';
-                    $mail->Password   = $_ENV['SENDGRID_API_KEY'];
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                    $mail->Port       = 465;
-                    $mail->setFrom('jacob@stewardgoods.com', 'Event Manager');
+                    $mail->Username   = 'resend';
+                    $mail->Password   = $_ENV['RESEND_API_KEY'];
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port       = 587;
+                    $mail->setFrom('noreply@stephens.page', 'Event Manager');
                     $mail->addAddress('jacob@stephens.page');
                     $ua = substr($request->getHeaderLine('User-Agent') ?: 'unknown', 0, 1024);
                     $mail->Subject = 'Event Manager — New Account Created';
@@ -629,17 +629,17 @@ $app->addBodyParsingMiddleware();
                 //Server settings
                 // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
                 $mail->isSMTP();                                            //Send using SMTP
-                $mail->Host       = 'smtp.sendgrid.net';                    //Set the SMTP server to send through
+                $mail->Host       = 'smtp.resend.com';                    //Set the SMTP server to send through
                 $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-                $mail->Username   = 'apikey';                               //SMTP username
-                $mail->Password   = $_ENV['SENDGRID_API_KEY'];              //SMTP password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-                $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+                $mail->Username   = 'resend';                               //SMTP username
+                $mail->Password   = $_ENV['RESEND_API_KEY'];              //SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+                $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
                 //Recipients
-                $mail->setFrom('jacob@stewardgoods.com', 'Jacob');
+                $mail->setFrom('noreply@stephens.page', 'Jacob');
                 $mail->addAddress($requestBody['destinationEmail'], 'Charles');     //Add a recipient
-                $mail->addReplyTo('jacob@stewardgoods.com', 'Mr. Stephens');
+                $mail->addReplyTo('jacob@stephens.page', 'Mr. Stephens');
 
                 //Content
                 $mail->isHTML(true);                                  //Set email format to HTML
